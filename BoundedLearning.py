@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import warnings
 from utils import *
 
-class RwlGNN:
+class BoundedGNN:
     """ RWL-GNN (Robust Graph Neural Networks using Weighted Graph Laplacian)
     Parameters
     ----------
@@ -337,6 +337,15 @@ class RwlGNN:
         Aw[b[0],b[1]] =a
         Aw = Aw + Aw.t()
         return Aw
+
+    def Astar(self,adjacency):
+        n = adjacency.shape[0]
+        k = n * (n - 1) // 2
+        weight = torch.zeros(k,device= self.device)
+        b = torch.triu_indices(n, n, 1)
+        weight = adjacency[b[0], b[1]]
+        return weight
+
 
 
     def L(self,weight=None):
