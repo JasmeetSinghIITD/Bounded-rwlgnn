@@ -47,6 +47,7 @@ parser.add_argument('--inner_steps', type=int, default=2, help='steps for inner 
 parser.add_argument('--outer_steps', type=int, default=1, help='steps for outer optimization')
 parser.add_argument('--symmetric', action='store_true', default=False,
             help='whether use symmetric matrix')
+parser.add_argument('--bound', type=float, default=0, help='weight of bound importance')
 
 args = parser.parse_args()
 
