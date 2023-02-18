@@ -190,6 +190,14 @@ class RwlGNN:
    
         return w
 
+    def Astar(self,adjacency):
+        n = adjacency.shape[0]
+        k = n * (n - 1) // 2
+        weight = torch.zeros(k,device= self.device)
+        b = torch.triu_indices(n, n, 1)
+        weight = adjacency[b[0], b[1]]
+        return weight
+
     def normalize(self,w=None):
 
         if self.symmetric:
