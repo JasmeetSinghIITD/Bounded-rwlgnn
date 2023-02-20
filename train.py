@@ -4,7 +4,7 @@ import argparse
 import numpy as np
 import torch
 
-from deeprobust.graph.defense import GCN
+#from deeprobust.graph.defense import GCN
 from deeprobust.graph.data import Dataset, PrePtbDataset
 from deeprobust.graph.utils import preprocess, encode_onehot, get_train_val_test
 

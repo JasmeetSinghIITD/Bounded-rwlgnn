@@ -94,10 +94,11 @@ class GCN(nn.Module):
     """
 
     def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4,
-            with_relu=True, with_bias=True, device=None):
+            with_relu=True, with_bias=True, device=None,bound = 0):
 
         super(GCN, self).__init__()
 
+        self.l2_reg = 0.0
         assert device is not None, "Please specify 'device'!"
         self.device = device
         self.nfeat = nfeat
@@ -118,6 +119,8 @@ class GCN(nn.Module):
         self.best_output = None
         self.adj_norm = None
         self.features = None
+        self.bound = bound
+
 
     def forward(self, x, adj):
         if self.with_relu:
@@ -127,6 +130,7 @@ class GCN(nn.Module):
 
         x = F.dropout(x, self.dropout, training=self.training)
         x = self.gc2(x, adj)
+
         return F.log_softmax(x, dim=1)
 
     def initialize(self):
@@ -199,7 +203,8 @@ class GCN(nn.Module):
         for i in range(train_iters):
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train])
+            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train])+self.l2_reg
             loss_train.backward()
             optimizer.step()
             if verbose and i % 10 == 0:
@@ -221,7 +226,8 @@ class GCN(nn.Module):
             self.train()
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train])
+            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train])+self.l2_reg
             loss_train.backward()
             optimizer.step()
 
@@ -259,7 +265,8 @@ class GCN(nn.Module):
             self.train()
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train])
+            self.l2_reg = bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
             loss_train.backward()
             optimizer.step()
 
@@ -275,7 +282,9 @@ class GCN(nn.Module):
             #         f1_score(labels.cpu().numpy(), preds.cpu().numpy(), average='macro')
 
             # perf_sum = eval_class(output[idx_val], labels[idx_val])
-            loss_val = F.nll_loss(output[idx_val], labels[idx_val])
+            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(
+                torch.norm(self.gc2.weight))
+            loss_val = F.nll_loss(output[idx_val], labels[idx_val])+self.l2_reg
 
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
