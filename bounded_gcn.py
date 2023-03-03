@@ -98,7 +98,7 @@ class GCN(nn.Module):
 
         super(GCN, self).__init__()
 
-        self.l2_reg = 0.0
+        self.l2_reg = 0.0   # Added by me
         assert device is not None, "Please specify 'device'!"
         self.device = device
         self.nfeat = nfeat
@@ -203,8 +203,10 @@ class GCN(nn.Module):
         for i in range(train_iters):
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
-            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train])+self.l2_reg
+
+            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight)) # Added by me
+
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
             loss_train.backward()
             optimizer.step()
             if verbose and i % 10 == 0:
@@ -226,8 +228,10 @@ class GCN(nn.Module):
             self.train()
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
+
             self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train])+self.l2_reg
+
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
             loss_train.backward()
             optimizer.step()
 
@@ -265,7 +269,9 @@ class GCN(nn.Module):
             self.train()
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
+
             self.l2_reg = bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
+
             loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
             loss_train.backward()
             optimizer.step()
@@ -284,7 +290,7 @@ class GCN(nn.Module):
             # perf_sum = eval_class(output[idx_val], labels[idx_val])
             self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(
                 torch.norm(self.gc2.weight))
-            loss_val = F.nll_loss(output[idx_val], labels[idx_val])+self.l2_reg
+            loss_val = F.nll_loss(output[idx_val], labels[idx_val]) + self.l2_reg
 
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
@@ -311,7 +317,7 @@ class GCN(nn.Module):
         self.eval()
         output = self.predict()
         # output = self.output
-        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
+        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test]) + self.l2_reg
         acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
