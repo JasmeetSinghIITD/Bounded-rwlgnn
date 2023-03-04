@@ -12,6 +12,7 @@ from deeprobust.graph.utils import preprocess, encode_onehot, get_train_val_test
 
 # Training settings
 parser = argparse.ArgumentParser()
+parser.add_argument('--bounded',type = str,help = "Bounded or regular",default="n")
 parser.add_argument('--two_stage',type = str,help = "Use Two Stage",default="y")
 parser.add_argument('--optim',type = str,help = "Optimizer",default="sgd")
 parser.add_argument('--lr_optim',type = float, help = "learning rate for the graph weight update" ,default=1e-3)
@@ -114,9 +115,12 @@ model = GCN(nfeat=features.shape[1],
             dropout=args.dropout, device=device)
 
 if args.only_gcn:
+
     perturbed_adj, features, labels = preprocess(perturbed_adj, features, labels, preprocess_adj=False, sparse=True, device=device)
     model.fit(features, perturbed_adj, labels, idx_train, idx_val, verbose=True, train_iters=args.epochs)
     model.test(idx_test)
+
+
 else:
     perturbed_adj, features, labels = preprocess(perturbed_adj, features, labels, preprocess_adj=False, device=device)
     rwlgnn = RwlGNN(model, args, device)

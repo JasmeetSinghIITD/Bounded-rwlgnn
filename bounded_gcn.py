@@ -49,7 +49,7 @@ class GraphConvolution(Module):
                + str(self.out_features) + ')'
 
 
-class GCN(nn.Module):
+class BoundedGCN(nn.Module):
     """ 2 Layer Graph Convolutional Network.
 
     Parameters
