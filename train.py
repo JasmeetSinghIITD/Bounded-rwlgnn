@@ -12,7 +12,9 @@ from deeprobust.graph.utils import preprocess, encode_onehot, get_train_val_test
 
 # Training settings
 parser = argparse.ArgumentParser()
-parser.add_argument('--bounded',type = str,help = "Bounded or regular",default="n")
+parser.add_argument('--bounded',type = str,help = "Bounded or regular",default="n") ##########################
+parser.add_argument('--bound', type=float, default=0, help='weight of bound importance')  ##########################
+
 parser.add_argument('--two_stage',type = str,help = "Use Two Stage",default="y")
 parser.add_argument('--optim',type = str,help = "Optimizer",default="sgd")
 parser.add_argument('--lr_optim',type = float, help = "learning rate for the graph weight update" ,default=1e-3)
@@ -48,14 +50,33 @@ parser.add_argument('--inner_steps', type=int, default=2, help='steps for inner 
 parser.add_argument('--outer_steps', type=int, default=1, help='steps for outer optimization')
 parser.add_argument('--symmetric', action='store_true', default=False,
             help='whether use symmetric matrix')
-parser.add_argument('--bound', type=float, default=0, help='weight of bound importance')
+
 
 args = parser.parse_args()
 
-if args.two_stage=="y": 
-    from RwlGNN_two import RwlGNN
+###################################################################################
+if args.bounded == 'y':
+    from bounded_gcn import BoundedGCN
+    model = BoundedGCN(nfeat=features.shape[1],
+                nhid=args.hidden,
+                nclass=labels.max().item() + 1,
+                dropout=args.dropout, device=device,bound=args.bound)
+    if args.two_stage=="y":
+        from Bounded_two_stage import RwlGNN
+    else:
+        from BoundedJointLearning import RwlGNN
 else:
-    from RwlGNN import RwlGNN
+    model = GCN(nfeat=features.shape[1],
+                nhid=args.hidden,
+                nclass=labels.max().item() + 1,
+                dropout=args.dropout, device=device)
+    if args.two_stage=="y":
+        from RwlGNN_two import RwlGNN
+    else:
+        from RwlGNN import RwlGNN
+
+#######################################################################################
+
 
 
 args.cuda = not args.no_cuda and torch.cuda.is_available()
@@ -109,10 +130,8 @@ if args.attack == 'meta' or args.attack == 'nettack':
 np.random.seed(args.seed)
 torch.manual_seed(args.seed)
 
-model = GCN(nfeat=features.shape[1],
-            nhid=args.hidden,
-            nclass=labels.max().item() + 1,
-            dropout=args.dropout, device=device)
+
+
 
 if args.only_gcn:
 
@@ -125,7 +144,7 @@ else:
     perturbed_adj, features, labels = preprocess(perturbed_adj, features, labels, preprocess_adj=False, device=device)
     rwlgnn = RwlGNN(model, args, device)
     if args.two_stage=="y":
-        adj_new = rwlgnn.fit(features, perturbed_adj)
+        adj_new = rwlgnn.fit(features, perturbed_adj,args.bound)
         model.fit(features, adj_new, labels, idx_train, idx_val, verbose=False, train_iters=args.epochs)
         model.test(idx_test)
     else:
