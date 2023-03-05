@@ -25,10 +25,10 @@ class RwlGNN:
     See details in https://github.com/Bharat-Runwal/RWL-GNN.
     """
 
-    def __init__(self,model, args, device):
+    def __init__(self,model, args, device,bound):     #####################
         self.device = device
         self.args = args
-
+        self.bound = bound                              ##########################
     def fit(self, features, adj):
         """Train RWL-GNN: Two-Stage.
         Parameters
@@ -50,6 +50,9 @@ class RwlGNN:
         optim_sgl = args.optim
         lr_sgl = args.lr_optim
 
+        self.d =  features.shape[1]        ################### Dimension of feature
+        self.w_old = self.Linv(L_noise)    ####################  To store previous w value ( w^{t-1} )
+
         adj = (adj.t() + adj)/2
         rowsum = adj.sum(1)
         r_inv = rowsum.flatten()
@@ -58,11 +61,16 @@ class RwlGNN:
  
         # INIT
         # self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
-        self.weight = self.Linv(L_noise)
+        self.weight = self.Linv(L_noise)         ###################################################
         self.weight.requires_grad = True
         self.weight = self.weight.to(self.device)
-
+        self.w_old = self.w_old.to(self.device)  #######################################################
         c = self.Lstar(2*L_noise*args.alpha - args.beta*(torch.matmul(features,features.t())) )
+
+        sq_norm_Aw = torch.norm(self.A(), p="fro")**2    ############################################################
+
+        new_term = self.bound * (2* self.Astar(self.A())-self.w_old)/ (sq_norm_Aw - self.w_old.t()*self.weight)  ######################
+
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
         elif optim_sgl == "RMSProp":
@@ -85,24 +93,25 @@ class RwlGNN:
 
 
 
-    def w_grad(self,alpha,c):
+    def w_grad(self,alpha,c,new_term):
       with torch.no_grad():
-        grad_f = self.Lstar(alpha*self.L()) - c
+        grad_f = self.Lstar(alpha*self.L()) - c + new_term
       
         return grad_f
 
 
-    def train_specific(self,c):
+    def train_specific(self,c,new_term):
         args = self.args
         if args.debug:
             print("\n=== train_adj ===")
         t = time.time()
               
-        sgl_grad = self.w_grad(args.alpha ,c)
+        sgl_grad = self.w_grad(args.alpha ,c,new_term) ###########################################
 
         total_grad  = sgl_grad  
         self.weight = self.sgl_opt.backward_pass(total_grad)
         self.weight = torch.clamp(self.weight,min=0)
+        self.w_old = self.weight
 
 
     def feature_smoothing(self, adj, X):
@@ -137,6 +146,14 @@ class RwlGNN:
         Aw[b[0],b[1]] =a
         Aw = Aw + Aw.t()
         return Aw
+
+    def Astar(self,adjacency):
+        n = adjacency.shape[0]
+        k = n * (n - 1) // 2
+        weight = torch.zeros(k,device= self.device)
+        b = torch.triu_indices(n, n, 1)
+        weight = adjacency[b[0], b[1]]
+        return weight
 
 
     def L(self,weight=None):
