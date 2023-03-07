@@ -86,7 +86,7 @@ class RwlGNN:
         t_total = time.time()
         
         for epoch in range(args.epochs_pre):
-            self.train_specific(c)
+            self.train_specific(c,new_term)
   
         print("Optimization Finished!")
         print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
