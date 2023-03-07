@@ -112,6 +112,7 @@ if args.attack == 'meta' or args.attack == 'nettack':
 np.random.seed(args.seed)
 torch.manual_seed(args.seed)
 
+##########################
 if args.bounded == 'y':
     from bounded_gcn import BoundedGCN
     model = BoundedGCN(nfeat=features.shape[1],
@@ -132,6 +133,7 @@ else:
     else:
         from RwlGNN import RwlGNN
 
+######################################
 
 if args.only_gcn:
 

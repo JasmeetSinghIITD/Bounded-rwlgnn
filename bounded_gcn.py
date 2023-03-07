@@ -317,7 +317,7 @@ class BoundedGCN(nn.Module):
         self.eval()
         output = self.predict()
         # output = self.output
-        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test]) + self.l2_reg
+        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test]) #+ self.l2_reg
         acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
