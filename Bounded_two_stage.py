@@ -25,10 +25,9 @@ class RwlGNN:
     See details in https://github.com/Bharat-Runwal/RWL-GNN.
     """
 
-    def __init__(self,model, args, device,bound):     #####################
+    def __init__(self,model, args, device):     #####################
         self.device = device
-        self.args = args
-        self.bound = bound                              ##########################
+        self.args = args                            ##########################
     def fit(self, features, adj):
         """Train RWL-GNN: Two-Stage.
         Parameters
@@ -46,10 +45,11 @@ class RwlGNN:
         """
         args = self.args
         self.symmetric = args.symmetric
-        
+
         optim_sgl = args.optim
         lr_sgl = args.lr_optim
 
+        self.bound = args.bound            #############################
         self.d =  features.shape[1]        ################### Dimension of feature
         self.w_old = self.Linv(L_noise)    ####################  To store previous w value ( w^{t-1} )
 
