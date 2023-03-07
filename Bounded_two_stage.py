@@ -49,16 +49,19 @@ class RwlGNN:
         optim_sgl = args.optim
         lr_sgl = args.lr_optim
 
-        self.bound = args.bound            #############################
-        self.d =  features.shape[1]        ################### Dimension of feature
-        self.w_old = self.Linv(L_noise)    ####################  To store previous w value ( w^{t-1} )
-
         adj = (adj.t() + adj)/2
         rowsum = adj.sum(1)
         r_inv = rowsum.flatten()
         D = torch.diag(r_inv)
         L_noise = D - adj
- 
+
+
+        self.bound = args.bound            #############################
+        self.d =  features.shape[1]        ################### Dimension of feature
+        self.w_old = self.Linv(L_noise)    ####################  To store previous w value ( w^{t-1} )
+
+
+
         # INIT
         # self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
         self.weight = self.Linv(L_noise)         ###################################################
