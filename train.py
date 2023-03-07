@@ -144,7 +144,7 @@ else:
     perturbed_adj, features, labels = preprocess(perturbed_adj, features, labels, preprocess_adj=False, device=device)
     rwlgnn = RwlGNN(model, args, device)
     if args.two_stage=="y":
-        adj_new = rwlgnn.fit(features, perturbed_adj,args.bound)
+        adj_new = rwlgnn.fit(features, perturbed_adj)
         model.fit(features, adj_new, labels, idx_train, idx_val, verbose=False, train_iters=args.epochs)
         model.test(idx_test)
     else:
