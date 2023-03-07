@@ -270,7 +270,7 @@ class BoundedGCN(nn.Module):
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
 
-            self.l2_reg = bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
+            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
 
             loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
             loss_train.backward()
@@ -288,8 +288,8 @@ class BoundedGCN(nn.Module):
             #         f1_score(labels.cpu().numpy(), preds.cpu().numpy(), average='macro')
 
             # perf_sum = eval_class(output[idx_val], labels[idx_val])
-            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(
-                torch.norm(self.gc2.weight))
+            #self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(
+            #    torch.norm(self.gc2.weight))
             loss_val = F.nll_loss(output[idx_val], labels[idx_val]) + self.l2_reg
 
             if best_loss_val > loss_val:
@@ -317,7 +317,7 @@ class BoundedGCN(nn.Module):
         self.eval()
         output = self.predict()
         # output = self.output
-        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test]) #+ self.l2_reg
+        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test]) + self.l2_reg
         acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
