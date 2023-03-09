@@ -121,6 +121,8 @@ if args.bounded == 'y':
                 dropout=args.dropout, device=device,bound=args.bound)
     if args.two_stage=="y":
         from Bounded_two_stage import RwlGNN
+        print(" Debug ::: Selected Bounded_two_stage ")
+        print(f'Debug ::: Bound = {args.bound}')
     else:
         from BoundedJointLearning import RwlGNN
 else:
@@ -130,6 +132,7 @@ else:
                 dropout=args.dropout, device=device)
     if args.two_stage=="y":
         from RwlGNN_two import RwlGNN
+
     else:
         from RwlGNN import RwlGNN
 
