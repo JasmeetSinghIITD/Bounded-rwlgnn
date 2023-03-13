@@ -43,6 +43,7 @@ class RwlGNN:
         idx_val :
             node validation indices
         """
+        print("Using bounded two stage ")
         args = self.args
         self.symmetric = args.symmetric
 
