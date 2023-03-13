@@ -204,7 +204,7 @@ class BoundedGCN(nn.Module):
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
 
-            self.l2_reg = 0#self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight)) # Added by me
+            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight)) # Added by me
 
             loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
             loss_train.backward()
@@ -317,7 +317,8 @@ class BoundedGCN(nn.Module):
         self.eval()
         output = self.predict()
         # output = self.output
-        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test]) + self.l2_reg
+        loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
+        print(f'{output[idx_test]},{labels[idx_test]}') ############
         acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
