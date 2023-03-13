@@ -319,7 +319,7 @@ class BoundedGCN(nn.Module):
         # output = self.output
         loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
         result = zip(output[idx_test],self.labels[idx_test])
-        print(result) ############
+        print(list(result)) ############
         acc_test = utils.accuracy(output[idx_test],self.labels[idx_test] )
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
