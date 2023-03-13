@@ -115,10 +115,14 @@ torch.manual_seed(args.seed)
 ##########################
 if args.bounded == 'y':
     from bounded_gcn import BoundedGCN
-    model = BoundedGCN(nfeat=features.shape[1],
+    #model = BoundedGCN(nfeat=features.shape[1],
+     #           nhid=args.hidden,
+     #           nclass=labels.max().item() + 1,
+     #           dropout=args.dropout, device=device,bound=args.bound)
+    model = GCN(nfeat=features.shape[1],
                 nhid=args.hidden,
                 nclass=labels.max().item() + 1,
-                dropout=args.dropout, device=device,bound=args.bound)
+              dropout=args.dropout, device=device)
     if args.two_stage=="y":
         from Bounded_two_stage import RwlGNN
         print(" Debug ::: Selected Bounded_two_stage ")
@@ -127,14 +131,10 @@ if args.bounded == 'y':
         from BoundedJointLearning import RwlGNN
 else:
     from bounded_gcn import BoundedGCN
-    model = BoundedGCN(nfeat=features.shape[1],
+    model = GCN(nfeat=features.shape[1],
                 nhid=args.hidden,
                 nclass=labels.max().item() + 1,
-                dropout=args.dropout, device=device,bound=args.bound)
-    #model = GCN(nfeat=features.shape[1],
-    #            nhid=args.hidden,
-    #            nclass=labels.max().item() + 1,
-    #            dropout=args.dropout, device=device)
+              dropout=args.dropout, device=device)
     if args.two_stage=="y":
         from RwlGNN_two import RwlGNN
 
