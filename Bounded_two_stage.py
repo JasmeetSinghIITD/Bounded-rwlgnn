@@ -91,7 +91,7 @@ class RwlGNN:
   
         print("Optimization Finished!")
         print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
-        print(args)
+        print(args,new_term)
 
         return self.A().detach()
 
