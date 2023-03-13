@@ -74,7 +74,7 @@ class RwlGNN:
         sq_norm_Aw = torch.norm(self.A(), p="fro")**2    ############################################################
 
         new_term =self.bound * (2* self.Astar(self.A())-self.w_old)/ (sq_norm_Aw - self.w_old.t()*self.weight)  ######################
-
+        print(f'New term = {new_term}')
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
         elif optim_sgl == "RMSProp":
