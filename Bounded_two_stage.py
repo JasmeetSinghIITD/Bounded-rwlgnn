@@ -76,8 +76,8 @@ class RwlGNN:
 
         new_term =self.bound * (2* self.Astar(self.A())-self.w_old)/ (sq_norm_Aw - self.w_old.t()*self.weight)  ######################
 
-        print(f'new term = {new_term}')
-        print(f'c = {c}')
+        for i,x in enumerate(new_term):
+            print(x)
 
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
