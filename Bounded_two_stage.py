@@ -79,7 +79,7 @@ class RwlGNN:
         k = self.Astar(self.A())-self.w_old
         print(f'new term = {new_term.shape}')
         print(f'c = {c.shape}')
-        print(f'self.Astar(self.A())-self.w_old) = {k.sum}')
+        print(f'self.Astar(self.A())-self.w_old) = {k.sum()}')
 
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
