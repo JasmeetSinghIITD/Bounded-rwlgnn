@@ -76,7 +76,7 @@ class RwlGNN:
 
         new_term =self.bound * (2* self.Astar(self.A())-self.w_old)/ (sq_norm_Aw - self.w_old.t()*self.weight)  ######################
 
-        print(f'new term = {new_term.sum()}')
+        print(f'new term = {new_term}')
         print(f'c = {c}')
 
         if optim_sgl == "Adam":
