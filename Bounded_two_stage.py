@@ -59,13 +59,17 @@ class RwlGNN:
 
         self.bound = args.bound            #############################
         self.d =  features.shape[1]        ################### Dimension of feature
-        self.w_old = self.Linv(L_noise)    ####################  To store previous w value ( w^{t-1} )
+
 
 
 
         # INIT
         # self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
         self.weight = self.Linv(L_noise)         ###################################################
+
+        self.w_old = torch.zeros_like(self.weight)  ####################  To store previous w value ( w^{t-1} )
+
+
         self.weight.requires_grad = True
         self.weight = self.weight.to(self.device)
         self.w_old = self.w_old.to(self.device)  #######################################################
