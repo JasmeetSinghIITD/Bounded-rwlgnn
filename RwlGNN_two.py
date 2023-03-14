@@ -57,7 +57,7 @@ class RwlGNN:
         L_noise = D - adj
 
         print("Using 2 stage")
-        print(f'Adj = {adj}')
+        print(f'Adj = {adj.sum()}')
 
         # INIT
         # self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
