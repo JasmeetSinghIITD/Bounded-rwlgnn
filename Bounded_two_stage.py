@@ -73,7 +73,7 @@ class RwlGNN:
 
         sq_norm_Aw = torch.norm(self.A(), p="fro")**2    ############################################################
 
-        print(f'Adj = {adj}')
+        print(f'Adj = {adj.sum()}')
 
         new_term =self.bound * (2* self.Astar(self.A())-self.w_old)/ (sq_norm_Aw - self.w_old.t()*self.weight)  ######################
 
