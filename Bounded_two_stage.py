@@ -78,12 +78,15 @@ class RwlGNN:
         sq_norm_Aw = torch.norm(self.A(), p="fro")**2    ############################################################
 
 
-        new_term =self.bound * (2* self.Astar(self.A())-self.w_old)/ (sq_norm_Aw - self.w_old.t()*self.weight)  ######################
+
 
         k = self.Astar(self.A())-self.w_old
+        kk = sq_norm_Aw - self.w_old.t()*self.weight
+
         print(f'new term = {new_term.shape}')
         print(f'c = {c.shape}')
         print(f'self.Astar(self.A())-self.w_old) = {k.sum()}')
+        print(f'self.Astar(self.A())-self.w_old) = {kk.sum()}')
 
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
@@ -97,6 +100,7 @@ class RwlGNN:
         t_total = time.time()
         
         for epoch in range(args.epochs_pre):
+            new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight) ##
             self.train_specific(c,new_term)
   
         print("Optimization Finished!")
