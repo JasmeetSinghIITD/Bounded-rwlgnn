@@ -73,8 +73,10 @@ class RwlGNN:
 
         sq_norm_Aw = torch.norm(self.A(), p="fro")**2    ############################################################
 
+        print(A)
+
         new_term =self.bound * (2* self.Astar(self.A())-self.w_old)/ (sq_norm_Aw - self.w_old.t()*self.weight)  ######################
-        print(f'New term = {new_term}')
+
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
         elif optim_sgl == "RMSProp":
@@ -91,7 +93,8 @@ class RwlGNN:
   
         print("Optimization Finished!")
         print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
-        print(args,new_term)
+        print(args)
+        print(f'New term = {new_term}')
 
         return self.A().detach()
 
@@ -112,10 +115,12 @@ class RwlGNN:
               
         sgl_grad = self.w_grad(args.alpha ,c,new_term) ###########################################
 
+        self.w_old = self.weight
+
         total_grad  = sgl_grad  
         self.weight = self.sgl_opt.backward_pass(total_grad)
         self.weight = torch.clamp(self.weight,min=0)
-        self.w_old = self.weight
+
 
 
     def feature_smoothing(self, adj, X):
