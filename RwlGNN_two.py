@@ -55,7 +55,9 @@ class RwlGNN:
         r_inv = rowsum.flatten()
         D = torch.diag(r_inv)
         L_noise = D - adj
- 
+
+        print(f'Adj = {adj}')
+
         # INIT
         # self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
         self.weight = self.Linv(L_noise)
