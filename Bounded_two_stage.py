@@ -76,7 +76,7 @@ class RwlGNN:
 
         new_term =self.bound * (2* self.Astar(self.A())-self.w_old)/ (sq_norm_Aw - self.w_old.t()*self.weight)  ######################
 
-         k = self.Astar(self.A())-self.w_old
+        k = self.Astar(self.A())-self.w_old
         print(f'new term = {new_term.shape}')
         print(f'c = {c.shape}')
         print(f'self.Astar(self.A())-self.w_old) = {k.sum}')
