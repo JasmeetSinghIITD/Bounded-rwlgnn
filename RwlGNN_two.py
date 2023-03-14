@@ -56,6 +56,7 @@ class RwlGNN:
         D = torch.diag(r_inv)
         L_noise = D - adj
 
+        print("Using 2 stage")
         print(f'Adj = {adj}')
 
         # INIT
