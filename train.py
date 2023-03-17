@@ -147,7 +147,7 @@ if args.only_gcn:
 
     perturbed_adj, features, labels = preprocess(perturbed_adj, features, labels, preprocess_adj=False, sparse=True, device=device)
 
-    features = torch.norm(features,p='fro')
+   # features = torch.norm(features,p='fro')
 
     model.fit(features, perturbed_adj, labels, idx_train, idx_val, verbose=True, train_iters=args.epochs)
     model.test(idx_test)
@@ -156,8 +156,8 @@ if args.only_gcn:
 else:
     perturbed_adj, features, labels = preprocess(perturbed_adj, features, labels, preprocess_adj=False, device=device)
 
-    col_norms = torch.norm(features, dim=0)
-    features = features/col_norms
+    #col_norms = torch.norm(features, dim=0)
+    #features = features/col_norms
 
     rwlgnn = RwlGNN(model, args, device)
     if args.two_stage=="y":

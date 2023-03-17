@@ -78,7 +78,7 @@ class RwlGNN:
         sq_norm_Aw = torch.norm(self.A(), p="fro")**2    ############################################################
 
         new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
-
+        print(f'New Term sum = {new_term.sum()}')
 
         k = self.Astar(self.A())-self.w_old
         kk = sq_norm_Aw - self.w_old.t()*self.weight
@@ -107,7 +107,7 @@ class RwlGNN:
         print("Optimization Finished!")
         print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
         print(args)
-        print(f'New term = {new_term}')
+        print(f'New term sum = {new_term.sum()}')
 
         return self.A().detach()
 
