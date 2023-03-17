@@ -51,7 +51,6 @@ class GraphConvolution(Module):
 
 class BoundedGCN(nn.Module):
     """ 2 Layer Graph Convolutional Network.
-
     Parameters
     ----------
     nfeat : int
@@ -73,11 +72,9 @@ class BoundedGCN(nn.Module):
         whether to include bias term in GCN weights.
     device: str
         'cpu' or 'cuda'.
-
     Examples
     --------
 	We can first load dataset and then train GCN.
-
     >>> from deeprobust.graph.data import Dataset
     >>> from deeprobust.graph.defense import GCN
     >>> data = Dataset(root='/tmp/', name='cora')
@@ -94,11 +91,10 @@ class BoundedGCN(nn.Module):
     """
 
     def __init__(self, nfeat, nhid, nclass, dropout=0.5, lr=0.01, weight_decay=5e-4,
-            with_relu=True, with_bias=True, device=None,bound = 0):
+            with_relu=True, with_bias=True, device=None,bound=0 ):
 
-        super(BoundedGCN, self).__init__()  ########################
+        super(BoundedGCN, self).__init__()
 
-        self.l2_reg = 0.0   # Added by me
         assert device is not None, "Please specify 'device'!"
         self.device = device
         self.nfeat = nfeat
@@ -108,6 +104,7 @@ class BoundedGCN(nn.Module):
         self.gc2 = GraphConvolution(nhid, nclass, with_bias=with_bias)
         self.dropout = dropout
         self.lr = lr
+        self.bound=bound
         if not with_relu:
             self.weight_decay = 0
         else:
@@ -119,8 +116,6 @@ class BoundedGCN(nn.Module):
         self.best_output = None
         self.adj_norm = None
         self.features = None
-        self.bound = bound
-
 
     def forward(self, x, adj):
         if self.with_relu:
@@ -130,7 +125,6 @@ class BoundedGCN(nn.Module):
 
         x = F.dropout(x, self.dropout, training=self.training)
         x = self.gc2(x, adj)
-
         return F.log_softmax(x, dim=1)
 
     def initialize(self):
@@ -139,9 +133,8 @@ class BoundedGCN(nn.Module):
         self.gc1.reset_parameters()
         self.gc2.reset_parameters()
 
-    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=True, normalize=True, patience=500, **kwargs):
+    def fit(self, features, adj, labels, idx_train, idx_val=None, train_iters=200, initialize=True, verbose=False, normalize=True, patience=500, **kwargs):
         """Train the gcn model, when idx_val is not None, pick the best model according to the validation loss.
-
         Parameters
         ----------
         features :
@@ -198,15 +191,16 @@ class BoundedGCN(nn.Module):
                 self._train_with_val(labels, idx_train, idx_val, train_iters, verbose)
 
     def _train_without_val(self, labels, idx_train, train_iters, verbose):
+        print("Training without val")
         self.train()
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         for i in range(train_iters):
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
+            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))  # Added by me
 
-            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight)) # Added by me
-
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
+            print(f'L2 reg at iteration {i} = {l2_reg}')
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.bound*self.l2_reg
             loss_train.backward()
             optimizer.step()
             if verbose and i % 10 == 0:
@@ -228,10 +222,7 @@ class BoundedGCN(nn.Module):
             self.train()
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
-
-            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
-
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train])
             loss_train.backward()
             optimizer.step()
 
@@ -269,10 +260,7 @@ class BoundedGCN(nn.Module):
             self.train()
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
-
-            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))
-
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train])
             loss_train.backward()
             optimizer.step()
 
@@ -288,9 +276,7 @@ class BoundedGCN(nn.Module):
             #         f1_score(labels.cpu().numpy(), preds.cpu().numpy(), average='macro')
 
             # perf_sum = eval_class(output[idx_val], labels[idx_val])
-            #self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(
-            #    torch.norm(self.gc2.weight))
-            loss_val = F.nll_loss(output[idx_val], labels[idx_val]) + self.l2_reg
+            loss_val = F.nll_loss(output[idx_val], labels[idx_val])
 
             if best_loss_val > loss_val:
                 best_loss_val = loss_val
@@ -308,7 +294,6 @@ class BoundedGCN(nn.Module):
 
     def test(self, idx_test):
         """Evaluate GCN performance on test set.
-
         Parameters
         ----------
         idx_test :
@@ -318,10 +303,7 @@ class BoundedGCN(nn.Module):
         output = self.predict()
         # output = self.output
         loss_test = F.nll_loss(output[idx_test], self.labels[idx_test])
-        #result = zip(output[idx_test],self.labels[idx_test])
-        #print(list(result)) ############
-        print(output[idx_test].shape,self.labels.shape)
-        acc_test = utils.accuracy(output[idx_test],self.labels[idx_test] )
+        acc_test = utils.accuracy(output[idx_test], self.labels[idx_test])
         print("Test set results:",
               "loss= {:.4f}".format(loss_test.item()),
               "accuracy= {:.4f}".format(acc_test.item()))
@@ -330,15 +312,12 @@ class BoundedGCN(nn.Module):
 
     def predict(self, features=None, adj=None):
         """By default, the inputs should be unnormalized adjacency
-
         Parameters
         ----------
         features :
             node features. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.
         adj :
             adjcency matrix. If `features` and `adj` are not given, this function will use previous stored `features` and `adj` from training to make predictions.
-
-
         Returns
         -------
         torch.FloatTensor
@@ -358,6 +337,3 @@ class BoundedGCN(nn.Module):
             else:
                 self.adj_norm = utils.normalize_adj_tensor(adj)
             return self.forward(self.features, self.adj_norm)
-
-
-
