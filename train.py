@@ -156,7 +156,8 @@ if args.only_gcn:
 else:
     perturbed_adj, features, labels = preprocess(perturbed_adj, features, labels, preprocess_adj=False, device=device)
 
-    features = torch.norm(features, p='fro')
+    col_norms = torch.norm(features, dim=0)
+    perturbed_adj = perturbed_adj/col_norms
 
     rwlgnn = RwlGNN(model, args, device)
     if args.two_stage=="y":
