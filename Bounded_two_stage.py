@@ -75,7 +75,7 @@ class RwlGNN:
         self.w_old = self.w_old.to(self.device)  #######################################################
         c = self.Lstar(2*L_noise*args.alpha - args.beta*(torch.matmul(features,features.t())) )
 
-        sq_norm_Aw = torch.norm(self.A(), p="fro")**2    ############################################################
+        sq_norm_Aw = torch.norm(self.A(), p="fro")    ############################################################
 
         new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
         print(f'New Term sum = {new_term.sum()}')
@@ -87,7 +87,7 @@ class RwlGNN:
         print(f'new term = {new_term.shape}')
         print(f'c = {c.shape}')
         print(f'self.Astar(self.A())-self.w_old) = {k.sum()}')
-        print(f'self.Astar(self.A())-self.w_old) = {kk.sum()}')
+        print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
 
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
