@@ -268,7 +268,14 @@ class RwlGNN:
         self.optimizer.zero_grad()
 
         output = self.model(features, adj)
-        loss_train = F.nll_loss(output[idx_train], labels[idx_train])
+
+        self.l2_reg = self.bound * torch.square(torch.norm(self.model.gc1.weight)) \
+                      + torch.square(torch.norm(self.model.gc2.weight))  # Added by me
+
+        loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
+
+        print(f'L2_reg = {self.l2_reg}, Loss_train = {loss_train}')
+
         acc_train = accuracy(output[idx_train], labels[idx_train])
         loss_train.backward(retain_graph = True)
         self.optimizer.step()
