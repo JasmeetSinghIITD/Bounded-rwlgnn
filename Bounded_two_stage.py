@@ -83,8 +83,8 @@ class RwlGNN:
         k = self.Astar(self.A())-self.w_old
         kk = sq_norm_Aw - self.w_old.t()*self.weight
 
-        print(f'Adj sum = {adj.sum()}')
-        print(f'new term = {new_term.shape}')
+        print(f'Adj shape = {adj.sum()}')
+        print(f'new term shape = {new_term.shape}')
         print(f'c = {c.shape}')
         print(f'self.Astar(self.A())-self.w_old) = {k.sum()}')
         print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
