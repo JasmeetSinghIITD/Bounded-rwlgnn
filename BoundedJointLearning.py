@@ -180,7 +180,7 @@ class RwlGNN:
         loss_fro = args.alpha* torch.norm(self.L(y) - L_noise, p='fro')     
         normalized_adj = self.normalize(y)
         loss_smooth_feat =args.beta* self.feature_smoothing(self.A(y), features)
-       # loss_bound = args.bound*
+        #loss_bound = args.bound*
 
 
         output = self.model(features, normalized_adj)
