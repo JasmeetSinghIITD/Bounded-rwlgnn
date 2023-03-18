@@ -249,6 +249,7 @@ class BoundedGCN(nn.Module):
         self.load_state_dict(weights)
 
     def _train_with_early_stopping(self, labels, idx_train, idx_val, train_iters, patience, verbose):
+        print("Training with early stopping")
         if verbose:
             print('=== training gcn model ===')
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
