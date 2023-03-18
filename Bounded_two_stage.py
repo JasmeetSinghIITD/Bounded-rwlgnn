@@ -64,6 +64,7 @@ class RwlGNN:
 
 
         # INIT
+        n = features.shape[0]
         self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
         #self.weight = self.Linv(L_noise)         ###################################################
         #self.w_old= self.Linv(L_noise)
