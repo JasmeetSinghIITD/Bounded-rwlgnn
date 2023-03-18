@@ -76,7 +76,7 @@ class RwlGNN:
         self.w_old = self.w_old.to(self.device)  #######################################################
         c = self.Lstar(2*L_noise*args.alpha - args.beta*(torch.matmul(features,features.t())) )
 
-        sq_norm_Aw = torch.norm(self.A(), p="fro")    ############################################################
+        sq_norm_Aw = torch.norm(self.A(), p="fro") ** 2   ############################################################
 
         new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
         print(f'New Term sum = {new_term.sum()}')
@@ -102,7 +102,7 @@ class RwlGNN:
         
         for epoch in range(args.epochs_pre):
 
-            sq_norm_Aw = torch.norm(self.A(), p="fro")
+            sq_norm_Aw = torch.norm(self.A(), p="fro")**2
             new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight) ##
 
             self.train_specific(c,new_term)
