@@ -64,7 +64,7 @@ class RwlGNN:
 
 
         # INIT
-        n = features.shape[0]
+        #n = features.shape[0]
         #self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
         self.weight = self.Linv(L_noise)         ###################################################
         #self.w_old= self.Linv(L_noise)
@@ -102,7 +102,10 @@ class RwlGNN:
         
         for epoch in range(args.epochs_pre):
             new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight) ##
+
             self.train_specific(c,new_term)
+            if epoch%10==0:
+                print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
   
         print("Optimization Finished!")
         print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
