@@ -46,7 +46,7 @@ parser.add_argument('--alpha', type=float, default=1, help='weight of Forbeius n
 parser.add_argument('--epochs_pre', type=int,  default=500, help='Number of epochs to train in Two-Stage.')
 parser.add_argument('--gamma', type=float, default=1, help='weight of GCN')
 parser.add_argument('--beta', type=float, default=0, help='weight of feature smoothing')
-parser.add_argument('--inner_steps', type=int, default=2, help='steps for inner optimization')
+parser.add_argument('--inner_steps', type=int, default=1, help='steps for inner optimization')
 parser.add_argument('--outer_steps', type=int, default=1, help='steps for outer optimization')
 parser.add_argument('--symmetric', action='store_true', default=False,
             help='whether use symmetric matrix')
