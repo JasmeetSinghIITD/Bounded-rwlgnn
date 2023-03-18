@@ -66,8 +66,8 @@ class RwlGNN:
         # INIT
         # self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
         self.weight = self.Linv(L_noise)         ###################################################
-
-        self.w_old = torch.zeros_like(self.weight)  ####################  To store previous w value ( w^{t-1} )
+        self.w_old= self.Linv(L_noise)
+        #self.w_old = torch.zeros_like(self.weight)  ####################  To store previous w value ( w^{t-1} )
 
 
         self.weight.requires_grad = True
@@ -83,9 +83,6 @@ class RwlGNN:
         k = self.Astar(self.A())-self.w_old
         kk = sq_norm_Aw - self.w_old.t()*self.weight
 
-        print(f'Adj shape = {adj.sum()}')
-        adj = self.normalize(adj)
-        print(f'Adj shape = {adj.sum()}')
 
         print(f'c = {c.shape}')
         print(f'self.Astar(self.A())-self.w_old) = {k.sum()}')
