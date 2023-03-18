@@ -108,7 +108,7 @@ class RwlGNN:
             self.train_specific(c,new_term)
             if epoch%10==0:
                 kk = sq_norm_Aw - self.w_old.t() * self.weight
-                bound_loss = self.bound * torch.log(torch.sqrt(torch.tensor(self.d))*torch.norm(self.A()-self.A(w_old)))
+                bound_loss = self.bound * torch.log(torch.sqrt(torch.tensor(self.d))*torch.norm(self.A()-self.A(self.w_old)))
                 print(f'Bound loss = {bound_loss}')
                 print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
                 print(f'New Term sum = {new_term.sum()}')

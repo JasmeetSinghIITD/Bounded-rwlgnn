@@ -198,7 +198,7 @@ class BoundedGCN(nn.Module):
         for i in range(train_iters):
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
-            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))  # Added by me
+            #self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight))  # Added by me
 
             print(f'L2 reg at iteration {i} = {l2_reg}')
             loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.bound*self.l2_reg
@@ -225,7 +225,7 @@ class BoundedGCN(nn.Module):
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
 
-            self.l2_reg = self.bound * (torch.square(torch.norm(self.gc1.weight)) + torch.square(torch.norm(self.gc2.weight)) )    # Added by me
+            self.l2_reg = self.bound * (torch.log(torch.square(torch.norm(self.gc1.weight))) + torch.log(torch.square(torch.norm(self.gc2.weight))) )    # Added by me
 
             loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.bound*self.l2_reg
 
