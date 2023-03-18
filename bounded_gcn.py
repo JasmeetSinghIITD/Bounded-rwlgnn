@@ -224,7 +224,11 @@ class BoundedGCN(nn.Module):
             self.train()
             optimizer.zero_grad()
             output = self.forward(self.features, self.adj_norm)
-            loss_train = F.nll_loss(output[idx_train], labels[idx_train])
+
+            self.l2_reg = self.bound * torch.square(torch.norm(self.gc1.weight)) \
+                          + torch.square(torch.norm(self.gc2.weight))     # Added by me
+
+            loss_train = F.nll_loss(output[idx_train], labels[idx_train])+ self.bound*self.l2_reg
             loss_train.backward()
             optimizer.step()
 
