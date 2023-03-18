@@ -192,6 +192,7 @@ class BoundedGCN(nn.Module):
                 self._train_with_val(labels, idx_train, idx_val, train_iters, verbose)
 
     def _train_without_val(self, labels, idx_train, train_iters, verbose):
+        print("Training without val")
         self.train()
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         for i in range(train_iters):
@@ -211,6 +212,7 @@ class BoundedGCN(nn.Module):
         self.output = output
 
     def _train_with_val(self, labels, idx_train, idx_val, train_iters, verbose):
+        print("Training with val")
         if verbose:
             print('=== training gcn model ===')
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
