@@ -158,7 +158,7 @@ class RwlGNN:
 
 
 
-    def w_grad(self,alpha,new_term):
+    def w_grad(self,alpha,c,new_term):
       with torch.no_grad():
         grad_f = self.Lstar(alpha*self.L()) - c + new_term
         return grad_f 
