@@ -183,6 +183,7 @@ class BoundedGCN(nn.Module):
         self.labels = labels
 
         if idx_val is None:
+            print("Training without val")
             self._train_without_val(labels, idx_train, train_iters, verbose)
         else:
             if patience < train_iters:
@@ -191,7 +192,6 @@ class BoundedGCN(nn.Module):
                 self._train_with_val(labels, idx_train, idx_val, train_iters, verbose)
 
     def _train_without_val(self, labels, idx_train, train_iters, verbose):
-        print("Training without val")
         self.train()
         optimizer = optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         for i in range(train_iters):
