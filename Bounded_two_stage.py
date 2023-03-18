@@ -101,10 +101,13 @@ class RwlGNN:
         t_total = time.time()
         
         for epoch in range(args.epochs_pre):
+
+            sq_norm_Aw = torch.norm(self.A(), p="fro")
             new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight) ##
 
             self.train_specific(c,new_term)
             if epoch%10==0:
+                kk = sq_norm_Aw - self.w_old.t() * self.weight
                 print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
   
         print("Optimization Finished!")
