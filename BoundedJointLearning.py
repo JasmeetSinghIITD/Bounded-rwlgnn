@@ -203,7 +203,7 @@ class RwlGNN:
                    (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
         sgl_grad = self.w_grad(args.alpha ,c,new_term)
 
-        print(f'New Term = {new_term}')
+        print(f'New Term = {new_term.sum()}')
 
         total_grad  = sgl_grad + gcn_grad 
 
@@ -272,7 +272,7 @@ class RwlGNN:
 
         output = self.model(features, adj)
 
-        self.l2_reg = self.bound  * torch.square(torch.norm(self.model.gc1.weight)) \
+        self.l2_reg = self.bound * 0.01 * torch.square(torch.norm(self.model.gc1.weight)) \
                       + torch.square(torch.norm(self.model.gc2.weight))  # Added by me
 
         loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
