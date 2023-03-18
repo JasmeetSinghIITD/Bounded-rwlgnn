@@ -109,6 +109,7 @@ class RwlGNN:
             if epoch%10==0:
                 kk = sq_norm_Aw - self.w_old.t() * self.weight
                 print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
+                print(f'New Term sum = {new_term.sum()}')
   
         print("Optimization Finished!")
         print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
