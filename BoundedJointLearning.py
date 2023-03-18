@@ -105,6 +105,8 @@ class RwlGNN:
         # self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
 
         self.bound = args.bound            #############################
+
+        print(f'Bound = {self.bound}')
         self.d =  features.shape[1]        ################### Dimension of feature
     
         c = self.Lstar(2*L_noise*args.alpha - args.beta*(torch.matmul(features,features.t())) )
@@ -200,7 +202,8 @@ class RwlGNN:
         new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / \
                    (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
         sgl_grad = self.w_grad(args.alpha ,c,new_term)
-        
+
+        print(f'New Term = {new_term}')
 
         total_grad  = sgl_grad + gcn_grad 
 
