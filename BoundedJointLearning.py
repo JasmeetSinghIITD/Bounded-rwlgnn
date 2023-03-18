@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import warnings
 from utils import *
 
-class BoundedGNN:
+class RwlGNN:
     """ RWL-GNN (Robust Graph Neural Networks using Weighted Graph Laplacian)
     Parameters
     ----------
@@ -78,6 +78,8 @@ class BoundedGNN:
         idx_val :
             node validation indices
         """
+
+        print(" Bounded Joint Learning .........")
         args = self.args
         self.symmetric = args.symmetric
         self.optimizer = optim.Adam(self.model.parameters(),
@@ -96,10 +98,19 @@ class BoundedGNN:
         self.weight = self.Linv(L_noise)
       
         self.weight.requires_grad = True
+        self.w_old = torch.zeros_like(self.weight)  ####################  To store previous w value ( w^{t-1} )
+
         self.weight = self.weight.to(self.device)
+        self.w_old = self.w_old.to(self.device)  #######################################################
         # self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
+
+        self.bound = args.bound            #############################
+        self.d =  features.shape[1]        ################### Dimension of feature
     
         c = self.Lstar(2*L_noise*args.alpha - args.beta*(torch.matmul(features,features.t())) )
+
+
+
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
         elif optim_sgl == "RMSProp":
@@ -147,9 +158,9 @@ class BoundedGNN:
 
 
 
-    def w_grad(self,alpha,c):
+    def w_grad(self,alpha,new_term):
       with torch.no_grad():
-        grad_f = self.Lstar(alpha*self.L()) - c
+        grad_f = self.Lstar(alpha*self.L()) - c + new_term
         return grad_f 
 
 
@@ -167,6 +178,7 @@ class BoundedGNN:
         loss_fro = args.alpha* torch.norm(self.L(y) - L_noise, p='fro')     
         normalized_adj = self.normalize(y)
         loss_smooth_feat =args.beta* self.feature_smoothing(self.A(y), features)
+       # loss_bound = args.bound*
 
 
         output = self.model(features, normalized_adj)
@@ -182,13 +194,15 @@ class BoundedGNN:
         grad_outputs=torch.ones_like(loss_gcn),
         only_inputs= True,
           )[0]
-      
-        sgl_grad = self.w_grad(args.alpha ,c)
+
+        new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / \
+                   (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
+        sgl_grad = self.w_grad(args.alpha ,c,new_term)
         
 
         total_grad  = sgl_grad + gcn_grad 
 
-      
+        self.w_old = self.weight    ##########
         self.weight = self.sgl_opt.backward_pass(total_grad)
         self.weight = torch.clamp(self.weight,min=0)
 
