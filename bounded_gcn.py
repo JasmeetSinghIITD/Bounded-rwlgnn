@@ -231,7 +231,7 @@ class BoundedGCN(nn.Module):
             loss_train = F.nll_loss(output[idx_train], labels[idx_train]) #+ self.bound*self.l2_reg
 
             if i%10==0:
-                print(f'l2 Reg = {self.l2_reg} , Loss = {loss_train}')
+                #print(f'l2 Reg = {self.l2_reg} , Loss = {loss_train}')
 
             loss_train.backward()
             optimizer.step()
