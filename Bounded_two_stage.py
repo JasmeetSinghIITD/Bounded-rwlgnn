@@ -66,28 +66,30 @@ class RwlGNN:
         # INIT
         #n = features.shape[0]
         #self.weight = torch.rand(int(n*(n-1)/2),dtype=torch.float,requires_grad=True,device = self.device)
-        self.weight = self.Linv(L_noise)         ###################################################
-        #self.w_old= self.Linv(L_noise)
-        #self.w_old = torch.zeros_like(self.weight)  ####################  To store previous w value ( w^{t-1} )
-        self.w_old=self.weight
+
+        self.weight = self.Linv(L_noise)  ###################################################
+        self.w_old = torch.zeros_like(self.weight)  ####################  To store previous w value ( w^{t-1} )
+
+        # self.w_old= self.Linv(L_noise)
+        #self.w_old=self.weight
 
         self.weight.requires_grad = True
         self.weight = self.weight.to(self.device)
         self.w_old = self.w_old.to(self.device)  #######################################################
         c = self.Lstar(2*L_noise*args.alpha - args.beta*(torch.matmul(features,features.t())) )
 
-        sq_norm_Aw = torch.norm(self.A(), p="fro") ** 2   ############################################################
+        #sq_norm_Aw = torch.norm(self.A(), p="fro") ** 2   ############################################################
 
-        new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
-        print(f'New Term sum = {new_term.sum()}')
+        #new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
+        #print(f'New Term sum = {new_term.sum()}')
 
-        k = self.Astar(self.A())-self.w_old
-        kk = sq_norm_Aw - self.w_old.t()*self.weight
+        #k = self.Astar(self.A())-self.w_old
+        #kk = sq_norm_Aw - self.w_old.t()*self.weight
 
 
-        print(f'c = {c.shape}')
-        print(f'self.Astar(self.A())-self.w_old) = {k.sum()}')
-        print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
+        #print(f'c = {c.shape}')
+        #print(f'self.Astar(self.A())-self.w_old) = {k.sum()}')
+        #print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
 
         if optim_sgl == "Adam":
             self.sgl_opt =AdamOptimizer(self.weight,lr=lr_sgl)
@@ -107,11 +109,11 @@ class RwlGNN:
 
             self.train_specific(c,new_term)
             if epoch%10==0:
-                kk = sq_norm_Aw - self.w_old.t() * self.weight
+                #kk = sq_norm_Aw - self.w_old.t() * self.weight
                 bound_loss = self.bound * torch.log(torch.sqrt(torch.tensor(self.d))*torch.norm(self.A()-self.A(self.w_old)))
                 print(f'Bound loss = {bound_loss}')
-                print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
-                print(f'New Term sum = {new_term.sum()}')
+                #print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
+                #print(f'New Term sum = {new_term.sum()}')
   
         print("Optimization Finished!")
         print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
