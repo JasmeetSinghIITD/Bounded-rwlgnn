@@ -133,7 +133,7 @@ class RwlGNN:
                 
                 for i in range(int(args.outer_steps)):
                     self.train_specific(epoch, features, L_noise, labels,
-                            idx_train, idx_val,c)
+                            idx_train, idx_val,c,epoch)
 
                 for i in range(int(args.inner_steps)):
                     estimate_adj = self.A()
@@ -167,7 +167,7 @@ class RwlGNN:
 
 
 
-    def train_specific(self,epoch, features, L_noise, labels, idx_train, idx_val,c):
+    def train_specific(self,epoch, features, L_noise, labels, idx_train, idx_val,c,epoch):
         args = self.args
         if args.debug:
             print("\n=== train_adj ===")
@@ -177,10 +177,13 @@ class RwlGNN:
         y = y.to(self.device)
         y.requires_grad = True
 
-        loss_fro = args.alpha* torch.norm(self.L(y) - L_noise, p='fro')     
-        normalized_adj = self.normalize(y)
-        loss_smooth_feat =args.beta* self.feature_smoothing(self.A(y), features)
-        #loss_bound = args.bound*
+        if epoch%20 == 0
+            loss_fro = args.alpha* torch.norm(self.L(y) - L_noise, p='fro')
+            normalized_adj = self.normalize(y)
+            loss_smooth_feat =args.beta* self.feature_smoothing(self.A(y), features)
+            bound_loss = self.bound * torch.log(torch.sqrt(torch.tensor(self.d)) * torch.norm(self.A() - self.A(self.w_old)))
+            print(f'Total loss = {loss_fro + loss_smooth_feat}, Bound loss = {bound_loss}')
+
 
 
         output = self.model(features, normalized_adj)
