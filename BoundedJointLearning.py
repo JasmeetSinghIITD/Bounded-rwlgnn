@@ -167,7 +167,7 @@ class RwlGNN:
 
 
 
-    def train_specific(self,epoch, features, L_noise, labels, idx_train, idx_val,c,epoch):
+    def train_specific(self,epoch, features, L_noise, labels, idx_train, idx_val,c,iter):
         args = self.args
         if args.debug:
             print("\n=== train_adj ===")
@@ -177,7 +177,7 @@ class RwlGNN:
         y = y.to(self.device)
         y.requires_grad = True
 
-        if epoch%20 == 0
+        if iter%20 == 0:
             loss_fro = args.alpha* torch.norm(self.L(y) - L_noise, p='fro')
             normalized_adj = self.normalize(y)
             loss_smooth_feat =args.beta* self.feature_smoothing(self.A(y), features)
