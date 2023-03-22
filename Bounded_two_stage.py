@@ -111,8 +111,8 @@ class RwlGNN:
             if epoch%20==0:
                 #kk = sq_norm_Aw - self.w_old.t() * self.weight
                 bound_loss = self.bound * torch.log(torch.sqrt(torch.tensor(self.d))*torch.norm(self.A()-self.A(self.w_old)))
-                loss_fro = args.alpha * torch.norm(self.L(y) - L_noise, p='fro')
-                loss_smooth_feat = args.beta * self.feature_smoothing(self.A(y), features)
+                loss_fro = args.alpha * torch.norm(self.L() - L_noise, p='fro')
+                loss_smooth_feat = args.beta * self.feature_smoothing(self.A(), features)
 
                 print(f'Total loss = {loss_fro+loss_smooth_feat}, Bound loss = {bound_loss}')
                 #print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
