@@ -163,7 +163,7 @@ else:
     rwlgnn = RwlGNN(model, args, device)
     if args.two_stage=="y":
         adj_new = rwlgnn.fit(features, perturbed_adj)
-        model.fit(features, adj_new, labels, idx_train, idx_val, verbose=False, train_iters=args.epochs,bound=args.bound) #######
+        model.fit(features, adj_new, labels, idx_train, idx_val, verbose=True, train_iters=args.epochs,bound=args.bound) #######
         model.test(idx_test)
     else:
         rwlgnn.fit(features, perturbed_adj, labels, idx_train, idx_val)

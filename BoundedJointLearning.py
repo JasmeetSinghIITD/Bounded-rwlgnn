@@ -198,13 +198,13 @@ class RwlGNN:
           )[0]
 
         sq_norm_Aw = torch.norm(self.A(), p="fro")**2  ############################################################
-        print(f'Aw(fro) = {sq_norm_Aw}')
+        #print(f'Aw(fro) = {sq_norm_Aw}')
 
         new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / \
                    (sq_norm_Aw - self.w_old.t() * self.weight)  ######################
         sgl_grad = self.w_grad(args.alpha ,c,new_term)
 
-        print(f'New Term = {new_term.sum()}')
+        #print(f'New Term = {new_term.sum()}')
 
         total_grad  = sgl_grad + gcn_grad 
 
