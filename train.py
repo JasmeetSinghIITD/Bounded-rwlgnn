@@ -3,7 +3,6 @@ import time
 import argparse
 import numpy as np
 import torch
-import warnings
 
 from deeprobust.graph.defense import GCN
 from deeprobust.graph.data import Dataset, PrePtbDataset
