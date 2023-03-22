@@ -108,10 +108,13 @@ class RwlGNN:
             new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight) ##
 
             self.train_specific(c,new_term)
-            if epoch%10==0:
+            if epoch%20==0:
                 #kk = sq_norm_Aw - self.w_old.t() * self.weight
                 bound_loss = self.bound * torch.log(torch.sqrt(torch.tensor(self.d))*torch.norm(self.A()-self.A(self.w_old)))
-                print(f'Bound loss = {bound_loss}')
+                loss_fro = args.alpha * torch.norm(self.L(y) - L_noise, p='fro')
+                loss_smooth_feat = args.beta * self.feature_smoothing(self.A(y), features)
+
+                print(f'Total loss = {loss_fro+loss_smooth_feat}, Bound loss = {bound_loss}')
                 #print(f'sq_norm_Aw - self.w_old.t()*self.weight) = {kk.sum()}')
                 #print(f'New Term sum = {new_term.sum()}')
   
