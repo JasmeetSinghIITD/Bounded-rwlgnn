@@ -215,9 +215,9 @@ class RwlGNN:
         self.weight = self.sgl_opt.backward_pass(total_grad)
         self.weight = torch.clamp(self.weight,min=0)
 
-        total_loss = loss_fro \
-                    +  loss_gcn \
-                    + loss_smooth_feat 
+        #total_loss = loss_fro \
+        #            +  loss_gcn \
+        #            + loss_smooth_feat
 
         self.model.eval()
         normalized_adj = self.normalize()
