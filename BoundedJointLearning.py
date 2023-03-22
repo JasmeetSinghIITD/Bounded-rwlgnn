@@ -279,7 +279,8 @@ class RwlGNN:
 
         loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
 
-        print(f'L2_reg = {self.l2_reg}, Loss_train = {loss_train}')
+        if epoch%20 == 0:
+            print(f'L2_reg = {self.l2_reg}, Loss_train = {loss_train}')
 
         acc_train = accuracy(output[idx_train], labels[idx_train])
         loss_train.backward(retain_graph = True)
