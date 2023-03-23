@@ -105,7 +105,7 @@ class RwlGNN:
         for epoch in range(args.epochs_pre):
 
             sq_norm_Aw = torch.norm(self.A(), p="fro")**2
-            new_term = self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight) ##
+            new_term = 1000* self.bound * (2 * self.Astar(self.A()) - self.w_old) / (sq_norm_Aw - self.w_old.t() * self.weight) ##
 
             self.train_specific(c,new_term)
             if epoch%20==0:
