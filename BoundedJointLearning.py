@@ -277,6 +277,8 @@ class RwlGNN:
 
         self.l2_reg =  2 * self.bound  * ( torch.log(torch.norm(self.model.gc1.weight)) + torch.log(torch.norm(self.model.gc2.weight)) )  # Added by me
 
+        if self.l2_reg <0:
+            self.l2_reg = 0
         loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.l2_reg
 
         if epoch % 20 == 0:

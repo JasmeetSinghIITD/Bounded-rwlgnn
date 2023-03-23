@@ -227,6 +227,9 @@ class BoundedGCN(nn.Module):
 
             self.l2_reg = 2 * self.bound * (torch.log(torch.norm(self.gc1.weight)) + torch.log(torch.norm(self.gc2.weight)) )    # Added by me
 
+            if self.l2_reg<0:
+                self.l2_reg=0
+
             loss_train = F.nll_loss(output[idx_train], labels[idx_train]) + self.bound*self.l2_reg
 
             if i%10==0:
